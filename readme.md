@@ -92,8 +92,10 @@ CSVファイルに「3,500円」のようなカンマ入り数値が入ってい
 
 # サンプルソース概略
 
-## AddNumbers
+## CsvFileReadSample
+新人に提供するベースとなるソースです。基本的なCSVファイル読み込みと表示処理だけが含まれているプログラムです。
 
 
-## CreateKukuList
+## CsvFileReadSample_Result
+課題5までの処理を盛り込んだ正解サンプルです。
 
