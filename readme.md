@@ -9,13 +9,18 @@ ITSS準拠の研修カリキュラム「プログラミングの基礎（B121）
 特に準備はありませんが、Visual StudioでC#のWindows Formプロジェクト、またはコンソールアプリケーションプロジェクトを作成してください。
 
 ## 課題1 プログラム実行と処理の把握
-サンプルプログラムをデバッグモードで動かし、一体何をやってるかを把握してください。
-StreamReaderでファイルから情報を読む際に「ファイルの全行を読み込む」ためにどうしているか、その部分に
-注目してくださいね。
 
 ### 新人用課題文
+サンプルプログラム「CsvFileReadSample」をデバッグモードで動かし、一体何をやってるかを把握してください。
+
+![CsvFileReadSample](images/CsvFileReadSampleForm.png)
 
 ### 講師用補足
+CsvFileを読み込んでDataGridViewに表示するプログラムです。処理内容は大まかに下記のようになっています。
+
+1. StreamReaderファイルを開く。
+1. 最初の1行だけを読み、DataGridViewの見出し行を作る。
+1. WhileでEndOfStreamまでファイルを1行ずつ読み、各行をSplitしたものをDataGridView.RowsのAddメソッドで表示する。
 
 
 
