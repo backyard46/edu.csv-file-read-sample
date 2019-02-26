@@ -1,17 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
 
 namespace CsvFileReadSample
 {
+    /// <summary>
+    /// CSVファイル読み込みと表示。
+    /// </summary>
+    /// <seealso cref="System.Windows.Forms.Form" />
     public partial class FileReadForm : Form
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileReadForm"/> class.
+        /// </summary>
         public FileReadForm()
         {
             InitializeComponent();
@@ -20,8 +22,8 @@ namespace CsvFileReadSample
         /// <summary>
         /// ファイルを開くボタン押下時処理。
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">イベント呼び出し元オブジェクト</param>
+        /// <param name="e">e</param>
         private void buttonOpenFile_Click(object sender, EventArgs e)
         {
             // 課題1
