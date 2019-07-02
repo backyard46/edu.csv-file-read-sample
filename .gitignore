@@ -259,3 +259,4 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/CsvFileReadSample_Result/CsvFile/懇親会予算見積もり.csv.bak

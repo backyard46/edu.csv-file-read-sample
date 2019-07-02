@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic.FileIO;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -24,43 +25,8 @@ namespace CsvFileReadSample_Result
         /// <param name="e"></param>
         private void buttonOpenFile_Click(object sender, EventArgs e)
         {
-            if (File.Exists(textFileName.Text))
-            {
-                // 指定されたファイルが存在する場合
-                string mojiCode = (radioUTF.Checked ? "utf-8" : "sjis");
-                char separator = (radioComma.Checked ? ',' : '|');
-
-                // usingでStreamReaderの利用を宣言してファイルを読み込む
-                using (StreamReader reader = new StreamReader(textFileName.Text, Encoding.GetEncoding(mojiCode)))
-                {
-                    string oneLineString = string.Empty;
-                    string[] oneLineData;
-
-                    gridMainData.Columns.Clear();
-                    gridMainData.Rows.Clear();
-
-                    // 最初の1行を読んで見出しにする
-                    oneLineString = reader.ReadLine();
-                    oneLineData = oneLineString.Split(separator);
-                    // 見出しを作る（Columnsに列名情報をAddする）
-                    foreach (string columnName in oneLineData)
-                    {
-                        gridMainData.Columns.Add(columnName, columnName);
-                    }
-
-                    // 2行目以降、最後の行までを1行ずつ読んでDataGridViewに追加する
-                    while (!reader.EndOfStream)
-                    {
-                        oneLineString = reader.ReadLine();
-                        gridMainData.Rows.Add(oneLineString.Split(separator));
-                    }
-                }
-            }
-            else
-            {
-                MessageBox.Show("指定されたファイル " + textFileName.Text + " は存在しません。", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
-
+            //ReadFile(textFileName.Text);
+            ReadFileTextFieldParser(textFileName.Text);
         }
 
         /// <summary>
@@ -86,7 +52,6 @@ namespace CsvFileReadSample_Result
             {
             }
         }
-
 
         /// <summary>
         /// フォームロード時処理。
@@ -115,7 +80,6 @@ namespace CsvFileReadSample_Result
             Properties.Settings.Default.Save();
         }
 
-
         /// <summary>
         /// 閉じるボタン押下時処理。
         /// </summary>
@@ -125,7 +89,6 @@ namespace CsvFileReadSample_Result
         {
             this.Close();
         }
-
 
         /// <summary>
         /// ファイルを保存するボタン押下時処理。
@@ -157,10 +120,112 @@ namespace CsvFileReadSample_Result
                 return;
             }
 
+            // ファイルに書き出す。
+            WriteFile(textFileName.Text, separator, mojiCode);
+        }
+
+        /// <summary>
+        /// 指定されたファイルを読み込んでグリッドに表示する。
+        /// </summary>
+        /// <param name="fileName">ファイル名。</param>
+        private void ReadFile(string fileName)
+        {
+            if (File.Exists(fileName))
+            {
+                // 指定されたファイルが存在する場合
+                string mojiCode = (radioUTF.Checked ? "utf-8" : "sjis");
+                char separator = (radioComma.Checked ? ',' : '|');
+
+                // usingでStreamReaderの利用を宣言してファイルを読み込む
+                using (StreamReader reader = new StreamReader(fileName, Encoding.GetEncoding(mojiCode)))
+                {
+                    string oneLineString = string.Empty;
+                    string[] oneLineData;
+
+                    gridMainData.Columns.Clear();
+                    gridMainData.Rows.Clear();
+
+                    // 最初の1行を読んで見出しにする
+                    oneLineString = reader.ReadLine();
+                    oneLineData = oneLineString.Split(separator);
+                    // 見出しを作る（Columnsに列名情報をAddする）
+                    foreach (string columnName in oneLineData)
+                    {
+                        gridMainData.Columns.Add(columnName, columnName);
+                    }
+
+                    // 2行目以降、最後の行までを1行ずつ読んでDataGridViewに追加する
+                    while (!reader.EndOfStream)
+                    {
+                        oneLineString = reader.ReadLine();
+                        gridMainData.Rows.Add(oneLineString.Split(separator));
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("指定されたファイル " + fileName + " は存在しません。", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+        }
+
+        /// <summary>
+        /// 指定されたファイルを読み込んでグリッドに表示する。
+        /// </summary>
+        /// <param name="fileName">ファイル名。</param>
+        private void ReadFileTextFieldParser(string fileName)
+        {
+            if (File.Exists(fileName))
+            {
+                // 指定されたファイルが存在する場合
+                string mojiCode = (radioUTF.Checked ? "utf-8" : "sjis");
+                string separator = (radioComma.Checked ? "," : "|");
+
+                // usingでStreamReaderの利用を宣言してファイルを読み込む
+                using (TextFieldParser parser = new TextFieldParser(fileName, Encoding.GetEncoding(mojiCode)))
+                {
+                    parser.TextFieldType = FieldType.Delimited;
+                    parser.SetDelimiters(separator);
+                    parser.HasFieldsEnclosedInQuotes = true;
+
+                    string oneLineString = string.Empty;
+                    string[] oneLineData;
+
+                    gridMainData.Columns.Clear();
+                    gridMainData.Rows.Clear();
+
+                    // 最初の1行を読んで見出しにする
+                    oneLineData = parser.ReadFields();
+                    // 見出しを作る（Columnsに列名情報をAddする）
+                    foreach (string columnName in oneLineData)
+                    {
+                        gridMainData.Columns.Add(columnName, columnName);
+                    }
+
+                    // 2行目以降、最後の行までを1行ずつ読んでDataGridViewに追加する
+                    while (!parser.EndOfData)
+                    {
+                        gridMainData.Rows.Add(parser.ReadFields());
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("指定されたファイル " + fileName + " は存在しません。", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+        }
+
+        /// <summary>
+        /// グリッドに表示されているデータを指定されたファイルに書き出す。
+        /// </summary>
+        /// <param name="fileName">書き出し先ファイル名。</param>
+        /// <param name="separator">区切り文字。</param>
+        /// <param name="mojiCode">文字コードを表す文字列。</param>
+        private void WriteFile(string fileName, char separator, string mojiCode)
+        {
             try
             {
                 // usingでStreamWriteの利用を宣言
-                using (StreamWriter writer = new StreamWriter(textFileName.Text, false, Encoding.GetEncoding(mojiCode)))
+                using (StreamWriter writer = new StreamWriter(fileName, false, Encoding.GetEncoding(mojiCode)))
                 {
                     int columnCount = gridMainData.Columns.Count;   // 列数
 
@@ -212,9 +277,10 @@ namespace CsvFileReadSample_Result
                 // ファイル書き出し失敗時
                 MessageBox.Show("ファイルの保存に失敗しました。保存先ファイルやフォルダをご確認ください。\r\n"
                     + "旧ファイルは、拡張子末尾に「_bak」がついたファイルとして退避されていますので、\r\n"
-                    + "お手数ですが手作業で元に戻してください。\r\n" 
-                    + ex.Message , "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    + "お手数ですが手作業で元に戻してください。\r\n"
+                    + ex.Message, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
     }
 }
